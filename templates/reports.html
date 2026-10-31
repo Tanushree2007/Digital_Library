@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Reports & Analytics - Admin Console{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+  <!-- Left Admin Sidebar -->
+  <aside class="admin-sidebar d-print-none">
+    <div class="d-flex align-items-center gap-2 mb-4 px-2">
+      <div class="brand-icon-badge" style="width: 32px; height: 32px; font-size: 1rem;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div>
+        <h6 class="text-white mb-0 fw-bold">Admin Console</h6>
+        <span class="small text-muted">Librarian Portal</span>
+      </div>
+    </div>
+
+    <ul class="admin-sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-speedometer2"></i> Dashboard Overview
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_books') }}">
+          <i class="bi bi-book"></i> Book Inventory
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_book') }}">
+          <i class="bi bi-plus-circle"></i> Add New Book
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_research') }}">
+          <i class="bi bi-file-earmark-pdf"></i> Research Repository
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_research') }}">
+          <i class="bi bi-cloud-arrow-up"></i> Add Research Paper
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_issues') }}">
+          <i class="bi bi-arrow-left-right"></i> Circulation & Issues
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_members') }}">
+          <i class="bi bi-people"></i> Member Management
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('reports') }}">
+          <i class="bi bi-graph-up"></i> Reports & Analytics
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Right Main Content -->
+  <main class="admin-main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Library Reports & Analytics</h2>
+        <p class="text-muted small mb-0">Generated dynamic statistical reports based on real-time database transactions.</p>
+      </div>
+      <div class="d-print-none">
+        <button class="btn btn-outline-secondary btn-sm" onclick="window.print()">
+          <i class="bi bi-printer me-1"></i> Print / Export Report
+        </button>
+      </div>
+    </div>
+
+    <!-- Circulation Overview Metrics -->
+    <div class="row g-3 mb-4">
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-label">Total Titles</div>
+          <div class="stat-value text-primary">{{ stats.total_books }}</div>
+          <div class="small text-muted mt-1">{{ stats.total_copies }} total copies held</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-label">Active Loans</div>
+          <div class="stat-value text-teal">{{ stats.issued_books }}</div>
+          <div class="small text-muted mt-1">Currently in student possession</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-label">Overdue Loans</div>
+          <div class="stat-value text-danger">{{ stats.overdue_books }}</div>
+          <div class="small text-muted mt-1">Requiring return reminder</div>
+        </div>
+      </div>
+      <div class="col-md-3 col-6">
+        <div class="stat-card">
+          <div class="stat-label">Returned Loans</div>
+          <div class="stat-value text-success">{{ stats.returned_books }}</div>
+          <div class="small text-muted mt-1">Completed checkouts</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row g-4">
+      <!-- Category-wise Inventory Table -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0 text-dark">
+              <i class="bi bi-folder2-open text-primary me-2"></i> Collection by Discipline
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Discipline / Category</th>
+                    <th class="text-center">Titles</th>
+                    <th class="text-center">Total Copies</th>
+                    <th class="text-center">Available</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if category_stats %}
+                    {% for cs in category_stats %}
+                      <tr>
+                        <td class="fw-semibold text-dark">{{ cs.category }}</td>
+                        <td class="text-center">{{ cs.title_count }}</td>
+                        <td class="text-center">{{ cs.sum_total }}</td>
+                        <td class="text-center">
+                          <span class="badge bg-success-subtle text-success">
+                            {{ cs.sum_available }}
+                          </span>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="4" class="text-center py-4 text-muted">No category data recorded.</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Popular Circulated Titles Table -->
+      <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100">
+          <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0 text-dark">
+              <i class="bi bi-fire text-warning me-2"></i> Most Borrowed Titles
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Book Title</th>
+                    <th>Category</th>
+                    <th class="text-center">Borrow Frequency</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if popular_books %}
+                    {% for pb in popular_books %}
+                      <tr>
+                        <td>
+                          <div class="fw-semibold text-dark">{{ pb.title }}</div>
+                          <div class="small text-muted">{{ pb.author }}</div>
+                        </td>
+                        <td>
+                          <span class="badge bg-light text-primary border small">{{ pb.category }}</span>
+                        </td>
+                        <td class="text-center">
+                          <span class="badge bg-primary px-3 py-1 rounded-pill">
+                            {{ pb.borrow_count }} times
+                          </span>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="3" class="text-center py-4 text-muted">No circulation history yet.</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

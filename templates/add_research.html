@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}Add Research Paper - Admin Console{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+  <!-- Left Admin Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="d-flex align-items-center gap-2 mb-4 px-2">
+      <div class="brand-icon-badge" style="width: 32px; height: 32px; font-size: 1rem;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div>
+        <h6 class="text-white mb-0 fw-bold">Admin Console</h6>
+        <span class="small text-muted">Librarian Portal</span>
+      </div>
+    </div>
+
+    <ul class="admin-sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-speedometer2"></i> Dashboard Overview
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_books') }}">
+          <i class="bi bi-book"></i> Book Inventory
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_book') }}">
+          <i class="bi bi-plus-circle"></i> Add New Book
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_research') }}">
+          <i class="bi bi-file-earmark-pdf"></i> Research Repository
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('add_research') }}">
+          <i class="bi bi-cloud-arrow-up"></i> Add Research Paper
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_issues') }}">
+          <i class="bi bi-arrow-left-right"></i> Circulation & Issues
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_members') }}">
+          <i class="bi bi-people"></i> Member Management
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('reports') }}">
+          <i class="bi bi-graph-up"></i> Reports & Analytics
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Right Main Content -->
+  <main class="admin-main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Upload Academic Research Paper</h2>
+        <p class="text-muted small mb-0">Index a faculty paper, student dissertation, or journal publication with attached PDF.</p>
+      </div>
+      <div>
+        <a href="{{ url_for('manage_research') }}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1"></i> Back to Repository
+        </a>
+      </div>
+    </div>
+
+    <div class="card form-card shadow-sm border-0 max-w-900">
+      <form action="{{ url_for('add_research') }}" method="POST" enctype="multipart/form-data">
+        <div class="row g-3">
+          <div class="col-12">
+            <label for="title" class="form-label">Paper Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="e.g. Distributed Consensus in Asynchronous Byzantine Systems" required>
+          </div>
+
+          <div class="col-md-6">
+            <label for="author" class="form-label">Authors <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="author" name="author" placeholder="e.g. Leslie Lamport, Michael Fischer" required>
+          </div>
+
+          <div class="col-md-6">
+            <label for="subject" class="form-label">Subject / Discipline <span class="text-danger">*</span></label>
+            <select class="form-select mb-2" id="subject" name="subject">
+              <option value="" selected disabled>Select subject area</option>
+              {% for s in subjects %}
+                <option value="{{ s }}">{{ s }}</option>
+              {% endfor %}
+            </select>
+            <input type="text" class="form-control form-control-sm" name="new_subject" placeholder="Or enter a new subject area...">
+          </div>
+
+          <div class="col-md-4">
+            <label for="publication_year" class="form-label">Publication Year <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="publication_year" name="publication_year" placeholder="e.g. 2024" min="1950" max="2030" required>
+          </div>
+
+          <div class="col-md-8">
+            <label for="journal_name" class="form-label">Journal / Conference Name</label>
+            <input type="text" class="form-control" id="journal_name" name="journal_name" placeholder="e.g. IEEE Transactions on Software Engineering">
+          </div>
+
+          <div class="col-12">
+            <label for="keywords" class="form-label">Keywords</label>
+            <input type="text" class="form-control" id="keywords" name="keywords" placeholder="Comma-separated (e.g. Distributed Systems, Consensus, Fault Tolerance)">
+          </div>
+
+          <div class="col-12">
+            <label for="abstract" class="form-label">Paper Abstract <span class="text-danger">*</span></label>
+            <textarea class="form-control" id="abstract" name="abstract" rows="5" placeholder="Detailed academic abstract..." required></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="pdf_file" class="form-label">Research Paper Document (PDF Format)</label>
+            <input type="file" class="form-control" id="pdf_file" name="pdf_file" accept=".pdf">
+            <div class="form-text small">Only PDF files are accepted. Safe filename sanitization applied automatically.</div>
+          </div>
+
+          <div class="col-12 mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary-custom px-4">
+              <i class="bi bi-cloud-arrow-up me-1"></i> Index Paper
+            </button>
+            <a href="{{ url_for('manage_research') }}" class="btn btn-secondary-custom px-4">
+              Cancel
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+{% endblock %}

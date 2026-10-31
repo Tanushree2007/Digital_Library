@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+
+{% block title %}Student Registration - Digital Library & Research Management System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="card form-card shadow-lg border-0">
+        <div class="text-center mb-4">
+          <div class="brand-icon-badge mx-auto mb-3" style="width: 52px; height: 52px; font-size: 1.6rem;">
+            <i class="bi bi-person-plus-fill"></i>
+          </div>
+          <h3 class="fw-bold text-dark">Register Student Account</h3>
+          <p class="text-muted small">Create your student library account to borrow books and access research databases.</p>
+        </div>
+
+        <form action="{{ url_for('register') }}" method="POST">
+          <div class="row g-3">
+            <div class="col-12">
+              <label for="name" class="form-label">Full Name <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
+                <input type="text" class="form-control" id="name" name="name" placeholder="e.g. John Doe" required autofocus>
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label for="email" class="form-label">Email Address <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-envelope"></i></span>
+                <input type="email" class="form-control" id="email" name="email" placeholder="student@collegelibrary.edu" required>
+              </div>
+              <div class="form-text small">Your official institutional email address.</div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="student_id" class="form-label">Student ID / Roll No. <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-card-text"></i></span>
+                <input type="text" class="form-control" id="student_id" name="student_id" placeholder="CS-2024-XXX" required>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Phone Number</label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-telephone"></i></span>
+                <input type="tel" class="form-control" id="phone" name="phone" placeholder="+1-555-0199">
+              </div>
+            </div>
+
+            <div class="col-12">
+              <label for="department" class="form-label">Academic Department <span class="text-danger">*</span></label>
+              <select class="form-select" id="department" name="department" required>
+                <option value="" selected disabled>Select your department</option>
+                <option value="Computer Science & Engineering">Computer Science & Engineering</option>
+                <option value="Artificial Intelligence & Data Science">Artificial Intelligence & Data Science</option>
+                <option value="Software Engineering & Web Development">Software Engineering & Web Development</option>
+                <option value="Mathematics & Statistics">Mathematics & Statistics</option>
+                <option value="Electrical & Electronics Engineering">Electrical & Electronics Engineering</option>
+                <option value="Cybersecurity & Cryptography">Cybersecurity & Cryptography</option>
+                <option value="Physics & Quantum Computing">Physics & Quantum Computing</option>
+                <option value="General Sciences & Humanities">General Sciences & Humanities</option>
+              </select>
+            </div>
+
+            <div class="col-md-6">
+              <label for="password" class="form-label">Password <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
+                <input type="password" class="form-control" id="password" name="password" minlength="6" placeholder="Min 6 characters" required>
+              </div>
+            </div>
+
+            <div class="col-md-6">
+              <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
+              <div class="input-group">
+                <span class="input-group-text bg-light text-muted"><i class="bi bi-lock-fill"></i></span>
+                <input type="password" class="form-control" id="confirm_password" name="confirm_password" minlength="6" placeholder="Repeat password" required>
+              </div>
+            </div>
+
+            <div class="col-12 mt-4">
+              <button type="submit" class="btn btn-primary-custom w-100 py-2">
+                <i class="bi bi-person-check-fill me-2"></i> Complete Registration
+              </button>
+            </div>
+          </div>
+        </form>
+
+        <div class="text-center mt-4 pt-3 border-top">
+          <p class="small text-muted mb-0">
+            Already registered? 
+            <a href="{{ url_for('login') }}" class="text-teal fw-semibold text-decoration-none">Sign In here</a>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}My Profile - Digital Library & Research Management System{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container">
+    <h2 class="fw-bold mb-1 text-dark">Member Account & Profile</h2>
+    <p class="text-muted small mb-0">View and update your personal details and account credentials.</p>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <!-- Left Column: User Summary Card -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm p-4 text-center mb-4">
+        <div class="mx-auto mb-3" style="width: 90px; height: 90px;">
+          <img src="{{ url_for('static', filename='images/default_avatar.svg') }}" alt="{{ user.name }}" class="rounded-circle img-fluid shadow-sm">
+        </div>
+        <h4 class="fw-bold text-dark mb-1">{{ user.name }}</h4>
+        <p class="text-muted small mb-2">{{ user.email }}</p>
+        
+        <div class="mb-3">
+          <span class="badge bg-primary text-capitalize px-3 py-1">{{ user.role }}</span>
+          <span class="badge bg-success-subtle text-success text-capitalize px-3 py-1">{{ user.status }}</span>
+        </div>
+
+        <ul class="list-group list-group-flush text-start small border-top pt-3">
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Student ID / Roll No:</span>
+            <span class="fw-bold text-dark">{{ user.student_id or 'N/A' }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Department:</span>
+            <span class="fw-bold text-dark">{{ user.department or 'General' }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span class="text-muted">Registered On:</span>
+            <span class="text-dark">{{ user.created_at[:10] if user.created_at else 'Recent' }}</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Right Column: Profile & Security Forms -->
+    <div class="col-lg-8">
+      <!-- Edit Personal Information -->
+      <div class="card form-card shadow-sm border-0 mb-4">
+        <h5 class="fw-bold text-dark mb-4"><i class="bi bi-person-gear me-2 text-teal"></i> Update Personal Information</h5>
+        <form action="{{ url_for('profile') }}" method="POST">
+          <input type="hidden" name="action" value="update_profile">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="name" class="form-label">Full Name</label>
+              <input type="text" class="form-control" id="name" name="name" value="{{ user.name }}" required>
+            </div>
+
+            <div class="col-md-6">
+              <label for="email" class="form-label">Email Address (Read-Only)</label>
+              <input type="email" class="form-control bg-light" id="email" value="{{ user.email }}" readonly>
+            </div>
+
+            <div class="col-md-6">
+              <label for="phone" class="form-label">Phone Number</label>
+              <input type="tel" class="form-control" id="phone" name="phone" value="{{ user.phone or '' }}" placeholder="+1-555-0199">
+            </div>
+
+            <div class="col-md-6">
+              <label for="department" class="form-label">Academic Department</label>
+              <input type="text" class="form-control" id="department" name="department" value="{{ user.department or '' }}">
+            </div>
+
+            <div class="col-12 mt-3">
+              <button type="submit" class="btn btn-primary-custom">
+                <i class="bi bi-check-lg me-1"></i> Save Changes
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Update Password Form -->
+      <div class="card form-card shadow-sm border-0">
+        <h5 class="fw-bold text-dark mb-4"><i class="bi bi-key me-2 text-primary"></i> Change Account Password</h5>
+        <form action="{{ url_for('profile') }}" method="POST">
+          <input type="hidden" name="action" value="change_password">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label for="current_password" class="form-label">Current Password</label>
+              <input type="password" class="form-control" id="current_password" name="current_password" required>
+            </div>
+
+            <div class="col-md-4">
+              <label for="new_password" class="form-label">New Password</label>
+              <input type="password" class="form-control" id="new_password" name="new_password" minlength="6" required>
+            </div>
+
+            <div class="col-md-4">
+              <label for="confirm_new_password" class="form-label">Confirm New Password</label>
+              <input type="password" class="form-control" id="confirm_new_password" name="confirm_new_password" minlength="6" required>
+            </div>
+
+            <div class="col-12 mt-3">
+              <button type="submit" class="btn btn-outline-primary">
+                <i class="bi bi-shield-check me-1"></i> Update Password
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

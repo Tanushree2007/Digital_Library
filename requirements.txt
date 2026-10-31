@@ -1,0 +1,4 @@
+# Digital Library & Research Management System
+# Core Backend Dependencies
+Flask>=3.0.0
+Werkzeug>=3.0.0

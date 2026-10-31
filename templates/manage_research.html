@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Research Papers - Admin Console{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+  <!-- Left Admin Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="d-flex align-items-center gap-2 mb-4 px-2">
+      <div class="brand-icon-badge" style="width: 32px; height: 32px; font-size: 1rem;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div>
+        <h6 class="text-white mb-0 fw-bold">Admin Console</h6>
+        <span class="small text-muted">Librarian Portal</span>
+      </div>
+    </div>
+
+    <ul class="admin-sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-speedometer2"></i> Dashboard Overview
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_books') }}">
+          <i class="bi bi-book"></i> Book Inventory
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_book') }}">
+          <i class="bi bi-plus-circle"></i> Add New Book
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('manage_research') }}">
+          <i class="bi bi-file-earmark-pdf"></i> Research Repository
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_research') }}">
+          <i class="bi bi-cloud-arrow-up"></i> Add Research Paper
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_issues') }}">
+          <i class="bi bi-arrow-left-right"></i> Circulation & Issues
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_members') }}">
+          <i class="bi bi-people"></i> Member Management
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('reports') }}">
+          <i class="bi bi-graph-up"></i> Reports & Analytics
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Right Main Content -->
+  <main class="admin-main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Research Repository Management</h2>
+        <p class="text-muted small mb-0">Index, inspect, update, or remove academic papers, journal preprints, and theses.</p>
+      </div>
+      <div>
+        <a href="{{ url_for('add_research') }}" class="btn btn-primary-custom btn-sm">
+          <i class="bi bi-cloud-arrow-up me-1"></i> Add Research Paper
+        </a>
+      </div>
+    </div>
+
+    <!-- Research Papers Table -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-custom align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Paper Title & Authors</th>
+                <th>Subject Area</th>
+                <th>Year & Journal</th>
+                <th>PDF File</th>
+                <th>Date Indexed</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if papers %}
+                {% for p in papers %}
+                  <tr>
+                    <td>
+                      <div class="fw-bold text-dark">{{ p.title }}</div>
+                      <div class="small text-muted">{{ p.author }}</div>
+                    </td>
+                    <td>
+                      <span class="badge bg-light text-primary border">{{ p.subject }}</span>
+                    </td>
+                    <td class="small">
+                      <div class="fw-semibold text-dark">{{ p.publication_year }}</div>
+                      <div class="text-muted">{{ p.journal_name or 'Academic Proceedings' }}</div>
+                    </td>
+                    <td>
+                      {% if p.pdf_path %}
+                        <a href="{{ url_for('download_paper', paper_id=p.id) }}" target="_blank" class="badge bg-success-subtle text-success text-decoration-none">
+                          <i class="bi bi-file-earmark-pdf me-1"></i> Available
+                        </a>
+                      {% else %}
+                        <span class="badge bg-secondary-subtle text-muted">No PDF</span>
+                      {% endif %}
+                    </td>
+                    <td class="small text-muted">{{ p.created_at[:10] if p.created_at else 'Recent' }}</td>
+                    <td>
+                      <div class="btn-group btn-group-sm">
+                        <a href="{{ url_for('research_details', paper_id=p.id) }}" class="btn btn-outline-secondary" title="View Details">
+                          <i class="bi bi-eye"></i>
+                        </a>
+                        <form action="{{ url_for('delete_research', paper_id=p.id) }}" method="POST" class="d-inline" onsubmit="return confirm('Delete this research paper permanently?');">
+                          <button type="submit" class="btn btn-outline-danger" title="Delete Paper">
+                            <i class="bi bi-trash"></i>
+                          </button>
+                        </form>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="6" class="text-center py-5 text-muted">
+                    No academic papers found in database.
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

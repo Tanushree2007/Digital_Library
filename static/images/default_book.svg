@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 320" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bookGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b" />
+      <stop offset="100%" stop-color="#0f172a" />
+    </linearGradient>
+    <linearGradient id="accentGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#06b6d4" />
+      <stop offset="100%" stop-color="#0d9488" />
+    </linearGradient>
+  </defs>
+  <!-- Book Body -->
+  <rect width="240" height="320" rx="8" fill="url(#bookGrad)" />
+  <!-- Spine Line -->
+  <rect x="24" y="0" width="4" height="320" fill="rgba(255,255,255,0.1)" />
+  <!-- Accent Bar Top -->
+  <rect x="36" y="28" width="170" height="6" rx="3" fill="url(#accentGrad)" />
+  <!-- Center Book Icon -->
+  <g transform="translate(85, 110)" fill="none" stroke="url(#accentGrad)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+    <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+    <line x1="12" y1="6" x2="16" y2="6"></line>
+    <line x1="12" y1="10" x2="16" y2="10"></line>
+  </g>
+  <!-- Title Placeholder Text -->
+  <rect x="50" y="190" width="140" height="10" rx="5" fill="#e2e8f0" opacity="0.9" />
+  <rect x="70" y="210" width="100" height="8" rx="4" fill="#94a3b8" opacity="0.7" />
+  <!-- Footer Badge -->
+  <rect x="36" y="280" width="170" height="4" rx="2" fill="url(#accentGrad)" opacity="0.6" />
+</svg>

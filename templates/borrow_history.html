@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Borrowing History - Digital Library & Research Management System{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Circulation & Borrowing History</h2>
+        <p class="text-muted small mb-0">Complete historical audit of your borrowing requests, returns, and issued items.</p>
+      </div>
+      <div>
+        <a href="{{ url_for('my_books') }}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-journal-bookmark me-1"></i> Active Loans
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Book Title & Author</th>
+              <th>Request Date</th>
+              <th>Issue Date</th>
+              <th>Due Date</th>
+              <th>Return Date</th>
+              <th>Status</th>
+              <th>Remarks</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if records %}
+              {% for r in records %}
+                <tr>
+                  <td>
+                    <div class="fw-bold text-dark">{{ r.title }}</div>
+                    <div class="small text-muted">{{ r.author }}</div>
+                  </td>
+                  <td class="small">{{ r.request_date[:10] if r.request_date else 'N/A' }}</td>
+                  <td class="small">{{ r.issue_date or '-' }}</td>
+                  <td class="small">{{ r.due_date or '-' }}</td>
+                  <td class="small">
+                    {% if r.return_date %}
+                      <span class="text-success fw-semibold">{{ r.return_date }}</span>
+                    {% else %}
+                      -
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="badge-status badge-status-{{ r.status.lower() }}">
+                      {{ r.status }}
+                    </span>
+                  </td>
+                  <td class="small text-muted">{{ r.remarks or '-' }}</td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="7" class="text-center py-5 text-muted">
+                  <i class="bi bi-clock-history fs-1 d-block mb-2"></i>
+                  <h5>No Borrowing History Found</h5>
+                  <p class="small">You haven't requested or borrowed any books yet.</p>
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

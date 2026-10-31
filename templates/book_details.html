@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}{{ book.title }} - Book Details{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container">
+    <nav aria-label="breadcrumb">
+      <ol class="breadcrumb mb-2 small">
+        <li class="breadcrumb-item"><a href="{{ url_for('index') }}" class="text-decoration-none">Home</a></li>
+        <li class="breadcrumb-item"><a href="{{ url_for('books') }}" class="text-decoration-none">Book Catalog</a></li>
+        <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
+      </ol>
+    </nav>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <h2 class="fw-bold mb-0 text-dark">{{ book.title }}</h2>
+      <a href="{{ url_for('books') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left me-1"></i> Back to Catalog
+      </a>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <!-- Left Column: Book Artwork & Availability Card -->
+    <div class="col-lg-4">
+      <div class="card border-0 shadow-sm overflow-hidden mb-4">
+        <div class="p-4 text-center bg-light">
+          <img src="{{ url_for('static', filename='images/default_book.svg') }}" alt="{{ book.title }}" class="img-fluid rounded shadow" style="max-height: 380px;">
+        </div>
+        <div class="p-3 bg-white border-top">
+          <div class="d-flex justify-content-between align-items-center mb-2">
+            <span class="text-muted small">Live Circulation Status:</span>
+            {% if book.available_copies > 0 %}
+              <span class="badge bg-success-subtle text-success fs-6 fw-bold">
+                <i class="bi bi-check-circle me-1"></i> In Stock
+              </span>
+            {% else %}
+              <span class="badge bg-danger-subtle text-danger fs-6 fw-bold">
+                <i class="bi bi-x-circle me-1"></i> Out of Stock
+              </span>
+            {% endif %}
+          </div>
+          <div class="d-flex justify-content-between align-items-center small text-muted">
+            <span>Available Copies:</span>
+            <span class="fw-bold text-dark">{{ book.available_copies }} of {{ book.total_copies }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Panel -->
+      <div class="card border-0 shadow-sm p-4 text-center">
+        {% if session.get('role') == 'student' %}
+          {% if book.available_copies > 0 %}
+            <button class="btn btn-primary-custom w-100 py-2 mb-2" onclick="requestBookBorrow({{ book.id }}, '{{ book.title|replace('\'', '\\\'') }}')">
+              <i class="bi bi-journal-arrow-down me-2"></i> Submit Borrow Request
+            </button>
+            <p class="small text-muted mb-0">Loan duration: 14 days upon librarian approval.</p>
+          {% else %}
+            <button class="btn btn-secondary w-100 py-2 mb-2" disabled>
+              <i class="bi bi-clock me-2"></i> All Copies Currently Issued
+            </button>
+            <p class="small text-muted mb-0">Check back later when an issued copy is returned.</p>
+          {% endif %}
+        {% elif session.get('role') == 'admin' %}
+          <div class="d-grid gap-2">
+            <a href="{{ url_for('edit_book', book_id=book.id) }}" class="btn btn-warning">
+              <i class="bi bi-pencil-square me-2"></i> Edit Book Information
+            </a>
+            <a href="{{ url_for('manage_books') }}" class="btn btn-outline-secondary">
+              <i class="bi bi-gear me-2"></i> Inventory Manager
+            </a>
+          </div>
+        {% else %}
+          <a href="{{ url_for('login') }}" class="btn btn-primary-custom w-100 py-2 mb-2">
+            <i class="bi bi-box-arrow-in-right me-2"></i> Sign In to Borrow
+          </a>
+          <p class="small text-muted mb-0">Registered students can borrow up to 3 books simultaneously.</p>
+        {% endif %}
+      </div>
+    </div>
+
+    <!-- Right Column: Comprehensive Book Metadata -->
+    <div class="col-lg-8">
+      <div class="card border-0 shadow-sm p-4 mb-4">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <span class="badge bg-light text-primary border">{{ book.category }}</span>
+          <span class="badge bg-secondary-subtle text-secondary">{{ book.publication_year }}</span>
+          <span class="badge bg-light text-muted border">{{ book.language or 'English' }}</span>
+        </div>
+        
+        <h3 class="fw-bold text-dark mb-1">{{ book.title }}</h3>
+        <p class="text-muted fs-5 mb-4">By <span class="text-dark fw-semibold">{{ book.author }}</span></p>
+
+        <h5 class="fw-bold text-dark mb-2">Book Description & Overview</h5>
+        <p class="text-muted" style="line-height: 1.8;">
+          {{ book.description or 'No detailed description provided for this volume.' }}
+        </p>
+
+        <hr class="my-4">
+
+        <h5 class="fw-bold text-dark mb-3">Bibliographic & Location Details</h5>
+        <div class="row g-3">
+          <div class="col-sm-6">
+            <div class="p-3 bg-light rounded">
+              <div class="text-muted small">International Standard Book Number (ISBN)</div>
+              <div class="fw-bold text-dark">{{ book.isbn or 'Not Available' }}</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="p-3 bg-light rounded">
+              <div class="text-muted small">Publisher</div>
+              <div class="fw-bold text-dark">{{ book.publisher or 'Academic Press' }}</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="p-3 bg-light rounded">
+              <div class="text-muted small">Publication Year</div>
+              <div class="fw-bold text-dark">{{ book.publication_year or 'N/A' }}</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="p-3 bg-light rounded">
+              <div class="text-muted small">Physical Shelf Location</div>
+              <div class="fw-bold text-dark"><i class="bi bi-geo-alt text-teal me-1"></i> {{ book.shelf_location or 'Main Library Stacks' }}</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="p-3 bg-light rounded">
+              <div class="text-muted small">Total Inventory</div>
+              <div class="fw-bold text-dark">{{ book.total_copies }} Copies</div>
+            </div>
+          </div>
+          <div class="col-sm-6">
+            <div class="p-3 bg-light rounded">
+              <div class="text-muted small">Currently Available Copies</div>
+              <div class="fw-bold text-success">{{ book.available_copies }} Copies Available</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Members - Admin Console{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+  <!-- Left Admin Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="d-flex align-items-center gap-2 mb-4 px-2">
+      <div class="brand-icon-badge" style="width: 32px; height: 32px; font-size: 1rem;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div>
+        <h6 class="text-white mb-0 fw-bold">Admin Console</h6>
+        <span class="small text-muted">Librarian Portal</span>
+      </div>
+    </div>
+
+    <ul class="admin-sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-speedometer2"></i> Dashboard Overview
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_books') }}">
+          <i class="bi bi-book"></i> Book Inventory
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_book') }}">
+          <i class="bi bi-plus-circle"></i> Add New Book
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_research') }}">
+          <i class="bi bi-file-earmark-pdf"></i> Research Repository
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_research') }}">
+          <i class="bi bi-cloud-arrow-up"></i> Add Research Paper
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_issues') }}">
+          <i class="bi bi-arrow-left-right"></i> Circulation & Issues
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('manage_members') }}">
+          <i class="bi bi-people"></i> Member Management
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('reports') }}">
+          <i class="bi bi-graph-up"></i> Reports & Analytics
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Right Main Content -->
+  <main class="admin-main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Student Member Roster</h2>
+        <p class="text-muted small mb-0">Review student registrations, borrowing permissions, and account statuses.</p>
+      </div>
+      <div>
+        <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6">
+          <i class="bi bi-people me-1"></i> {{ members|length }} Registered Students
+        </span>
+      </div>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="card border-0 shadow-sm p-3 mb-4">
+      <form action="{{ url_for('manage_members') }}" method="GET" class="row g-3 align-items-center">
+        <div class="col-md-6">
+          <div class="input-group">
+            <span class="input-group-text bg-light text-muted"><i class="bi bi-search"></i></span>
+            <input type="text" name="q" value="{{ search_query or '' }}" class="form-control" placeholder="Search by student name, email, or Student ID...">
+          </div>
+        </div>
+
+        <div class="col-md-3">
+          <select name="status" class="form-select">
+            <option value="">All Account Statuses</option>
+            <option value="active" {% if selected_status == 'active' %}selected{% endif %}>Active Members</option>
+            <option value="inactive" {% if selected_status == 'inactive' %}selected{% endif %}>Inactive / Suspended</option>
+          </select>
+        </div>
+
+        <div class="col-md-3 d-flex gap-2">
+          <button type="submit" class="btn btn-primary-custom w-100">
+            <i class="bi bi-funnel me-1"></i> Filter Members
+          </button>
+          {% if search_query or selected_status %}
+            <a href="{{ url_for('manage_members') }}" class="btn btn-outline-secondary">Reset</a>
+          {% endif %}
+        </div>
+      </form>
+    </div>
+
+    <!-- Members Table -->
+    <div class="card border-0 shadow-sm">
+      <div class="card-body p-0">
+        <div class="table-responsive">
+          <table class="table table-custom align-middle mb-0">
+            <thead>
+              <tr>
+                <th>Member Name & Email</th>
+                <th>Student ID</th>
+                <th>Department</th>
+                <th>Phone</th>
+                <th>Status</th>
+                <th>Registered</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if members %}
+                {% for m in members %}
+                  <tr>
+                    <td>
+                      <div class="fw-bold text-dark">{{ m.name }}</div>
+                      <div class="small text-muted">{{ m.email }}</div>
+                    </td>
+                    <td class="font-monospace fw-semibold">{{ m.student_id or '-' }}</td>
+                    <td class="small">{{ m.department or 'General' }}</td>
+                    <td class="small">{{ m.phone or '-' }}</td>
+                    <td>
+                      <span class="badge-status badge-status-{{ m.status }}">
+                        {{ m.status }}
+                      </span>
+                    </td>
+                    <td class="small text-muted">{{ m.created_at[:10] if m.created_at else 'Recent' }}</td>
+                    <td>
+                      <div class="btn-group btn-group-sm">
+                        <a href="{{ url_for('member_details', member_id=m.id) }}" class="btn btn-outline-secondary" title="View Member Profile & Loan History">
+                          <i class="bi bi-person-lines-fill"></i>
+                        </a>
+                        <button type="button" class="btn {{ 'btn-outline-danger' if m.status == 'active' else 'btn-outline-success' }}" onclick="toggleMemberStatus({{ m.id }}, '{{ m.status }}')" title="{{ 'Deactivate Account' if m.status == 'active' else 'Activate Account' }}">
+                          {% if m.status == 'active' %}
+                            <i class="bi bi-person-slash"></i>
+                          {% else %}
+                            <i class="bi bi-person-check"></i>
+                          {% endif %}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {% endfor %}
+              {% else %}
+                <tr>
+                  <td colspan="7" class="text-center py-5 text-muted">
+                    No members found matching your search.
+                  </td>
+                </tr>
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

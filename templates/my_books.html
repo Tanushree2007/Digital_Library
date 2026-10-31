@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}My Borrowed Books - Digital Library & Research Management System{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Active Borrowed Books</h2>
+        <p class="text-muted small mb-0">Currently issued volumes and active loan deadlines.</p>
+      </div>
+      <div>
+        <a href="{{ url_for('books') }}" class="btn btn-primary-custom btn-sm">
+          <i class="bi bi-plus-lg me-1"></i> Borrow Another Book
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <div class="card border-0 shadow-sm">
+    <div class="card-body p-0">
+      <div class="table-responsive">
+        <table class="table table-custom align-middle mb-0">
+          <thead>
+            <tr>
+              <th>Book Details</th>
+              <th>Category</th>
+              <th>Issue Date</th>
+              <th>Due Date</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% if books %}
+              {% for b in books %}
+                <tr>
+                  <td>
+                    <div class="fw-bold text-dark">{{ b.title }}</div>
+                    <div class="small text-muted"><i class="bi bi-person me-1"></i> {{ b.author }}</div>
+                    <div class="small text-muted"><i class="bi bi-geo-alt me-1"></i> Shelf: {{ b.shelf_location or 'Main Stacks' }}</div>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-primary border">{{ b.category }}</span>
+                  </td>
+                  <td>{{ b.issue_date or 'Processing' }}</td>
+                  <td>
+                    {% if b.status == 'Overdue' %}
+                      <span class="text-danger fw-bold"><i class="bi bi-exclamation-circle me-1"></i> {{ b.due_date }} (Overdue)</span>
+                    {% else %}
+                      <span class="fw-semibold text-dark">{{ b.due_date or 'Pending Issue' }}</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    <span class="badge-status badge-status-{{ b.status.lower() }}">
+                      {{ b.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <a href="{{ url_for('book_details', book_id=b.book_id) }}" class="btn btn-sm btn-outline-secondary">
+                      <i class="bi bi-info-circle"></i>
+                    </a>
+                  </td>
+                </tr>
+              {% endfor %}
+            {% else %}
+              <tr>
+                <td colspan="6" class="text-center py-5 text-muted">
+                  <i class="bi bi-journal-check text-muted fs-1 d-block mb-2"></i>
+                  <h5>No Books Currently Borrowed</h5>
+                  <p class="small">You do not have any active book loans. Explore the catalog to request your first book!</p>
+                  <a href="{{ url_for('books') }}" class="btn btn-primary-custom btn-sm mt-2">
+                    Browse Books
+                  </a>
+                </td>
+              </tr>
+            {% endif %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

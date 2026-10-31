@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+
+{% block title %}Add New Book - Admin Console{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+  <!-- Left Admin Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="d-flex align-items-center gap-2 mb-4 px-2">
+      <div class="brand-icon-badge" style="width: 32px; height: 32px; font-size: 1rem;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div>
+        <h6 class="text-white mb-0 fw-bold">Admin Console</h6>
+        <span class="small text-muted">Librarian Portal</span>
+      </div>
+    </div>
+
+    <ul class="admin-sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-speedometer2"></i> Dashboard Overview
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_books') }}">
+          <i class="bi bi-book"></i> Book Inventory
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('add_book') }}">
+          <i class="bi bi-plus-circle"></i> Add New Book
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_research') }}">
+          <i class="bi bi-file-earmark-pdf"></i> Research Repository
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_research') }}">
+          <i class="bi bi-cloud-arrow-up"></i> Add Research Paper
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_issues') }}">
+          <i class="bi bi-arrow-left-right"></i> Circulation & Issues
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_members') }}">
+          <i class="bi bi-people"></i> Member Management
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('reports') }}">
+          <i class="bi bi-graph-up"></i> Reports & Analytics
+        </a>
+      </li>
+    </ul>
+  </aside>
+
+  <!-- Right Main Content -->
+  <main class="admin-main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Add New Book to Catalog</h2>
+        <p class="text-muted small mb-0">Register a new physical volume or reference textbook into library inventory.</p>
+      </div>
+      <div>
+        <a href="{{ url_for('manage_books') }}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-arrow-left me-1"></i> Back to Inventory
+        </a>
+      </div>
+    </div>
+
+    <div class="card form-card shadow-sm border-0 max-w-900">
+      <form action="{{ url_for('add_book') }}" method="POST" enctype="multipart/form-data">
+        <div class="row g-3">
+          <div class="col-md-8">
+            <label for="title" class="form-label">Book Title <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="title" name="title" placeholder="e.g. Clean Architecture" required>
+          </div>
+
+          <div class="col-md-4">
+            <label for="isbn" class="form-label">ISBN <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="isbn" name="isbn" placeholder="e.g. 978-0134494166" required>
+          </div>
+
+          <div class="col-md-6">
+            <label for="author" class="form-label">Author(s) <span class="text-danger">*</span></label>
+            <input type="text" class="form-control" id="author" name="author" placeholder="e.g. Robert C. Martin" required>
+          </div>
+
+          <div class="col-md-6">
+            <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+            <select class="form-select mb-2" id="category" name="category">
+              <option value="" selected disabled>Select existing category</option>
+              {% for cat in categories %}
+                <option value="{{ cat.category_name }}">{{ cat.category_name }}</option>
+              {% endfor %}
+            </select>
+            <input type="text" class="form-control form-control-sm" name="new_category" placeholder="Or enter a new category...">
+          </div>
+
+          <div class="col-md-4">
+            <label for="publisher" class="form-label">Publisher</label>
+            <input type="text" class="form-control" id="publisher" name="publisher" placeholder="e.g. Prentice Hall">
+          </div>
+
+          <div class="col-md-4">
+            <label for="publication_year" class="form-label">Publication Year</label>
+            <input type="number" class="form-control" id="publication_year" name="publication_year" placeholder="e.g. 2022" min="1800" max="2030">
+          </div>
+
+          <div class="col-md-4">
+            <label for="language" class="form-label">Language</label>
+            <input type="text" class="form-control" id="language" name="language" value="English">
+          </div>
+
+          <div class="col-md-4">
+            <label for="total_copies" class="form-label">Total Copies <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="total_copies" name="total_copies" value="1" min="1" required>
+          </div>
+
+          <div class="col-md-4">
+            <label for="available_copies" class="form-label">Available Copies <span class="text-danger">*</span></label>
+            <input type="number" class="form-control" id="available_copies" name="available_copies" value="1" min="0" required>
+            <div class="form-text small">Cannot exceed total copies.</div>
+          </div>
+
+          <div class="col-md-4">
+            <label for="shelf_location" class="form-label">Shelf Location</label>
+            <input type="text" class="form-control" id="shelf_location" name="shelf_location" placeholder="e.g. Shelf B-12, Floor 2">
+          </div>
+
+          <div class="col-12">
+            <label for="description" class="form-label">Book Summary / Description</label>
+            <textarea class="form-control" id="description" name="description" rows="4" placeholder="Overview of topics covered, table of contents, or course prerequisites..."></textarea>
+          </div>
+
+          <div class="col-12">
+            <label for="cover_image" class="form-label">Cover Image File (Optional)</label>
+            <input type="file" class="form-control" id="cover_image" name="cover_image" accept=".jpg,.jpeg,.png,.webp">
+            <div class="form-text small">Accepts PNG, JPG, JPEG, WEBP. If empty, a default cover will be applied.</div>
+          </div>
+
+          <div class="col-12 mt-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary-custom px-4">
+              <i class="bi bi-check-lg me-1"></i> Save and Add Book
+            </button>
+            <a href="{{ url_for('manage_books') }}" class="btn btn-secondary-custom px-4">
+              Cancel
+            </a>
+          </div>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>
+{% endblock %}

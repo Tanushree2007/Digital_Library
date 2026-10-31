@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+
+{% block title %}Book Catalog - Digital Library & Research Management System{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Library Book Catalog</h2>
+        <p class="text-muted small mb-0">Browse our comprehensive collection of textbooks, monographs, and references.</p>
+      </div>
+      <div>
+        <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6">
+          <i class="bi bi-bookshelf me-1"></i> {{ books|length }} Titles Found
+        </span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <!-- Search & Filter Control Bar -->
+  <div class="card border-0 shadow-sm p-3 mb-4">
+    <form action="{{ url_for('books') }}" method="GET" class="row g-3 align-items-center">
+      <div class="col-lg-4 col-md-6">
+        <label class="form-label small text-muted mb-1">Search Keywords</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light text-muted"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" value="{{ search_query or '' }}" class="form-control" placeholder="Search title, author, ISBN...">
+        </div>
+      </div>
+
+      <div class="col-lg-3 col-md-6">
+        <label class="form-label small text-muted mb-1">Category</label>
+        <select name="category" class="form-select">
+          <option value="">All Categories</option>
+          {% for cat in categories %}
+            <option value="{{ cat.category_name }}" {% if selected_category == cat.category_name %}selected{% endif %}>
+              {{ cat.category_name }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-lg-2 col-md-4">
+        <label class="form-label small text-muted mb-1">Availability</label>
+        <select name="availability" class="form-select">
+          <option value="">All Statuses</option>
+          <option value="available" {% if selected_availability == 'available' %}selected{% endif %}>Available Now</option>
+          <option value="out_of_stock" {% if selected_availability == 'out_of_stock' %}selected{% endif %}>Out of Stock</option>
+        </select>
+      </div>
+
+      <div class="col-lg-2 col-md-4">
+        <label class="form-label small text-muted mb-1">Sort By</label>
+        <select name="sort" class="form-select">
+          <option value="title_asc" {% if selected_sort == 'title_asc' %}selected{% endif %}>Title (A - Z)</option>
+          <option value="title_desc" {% if selected_sort == 'title_desc' %}selected{% endif %}>Title (Z - A)</option>
+          <option value="year_desc" {% if selected_sort == 'year_desc' %}selected{% endif %}>Year (Newest)</option>
+          <option value="year_asc" {% if selected_sort == 'year_asc' %}selected{% endif %}>Year (Oldest)</option>
+        </select>
+      </div>
+
+      <div class="col-lg-1 col-md-4 d-flex align-items-end gap-1">
+        <button type="submit" class="btn btn-primary-custom w-100" title="Apply Filters">
+          <i class="bi bi-funnel"></i>
+        </button>
+        {% if search_query or selected_category or selected_availability or selected_sort %}
+          <a href="{{ url_for('books') }}" class="btn btn-outline-secondary" title="Reset Filters">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Book Catalog Grid -->
+  <div class="row g-4">
+    {% if books %}
+      {% for book in books %}
+        <div class="col-xl-3 col-lg-4 col-md-6">
+          <div class="book-card">
+            <div class="book-cover-container">
+              <img src="{{ url_for('static', filename='images/default_book.svg') }}" alt="{{ book.title }}" class="book-cover-img">
+              {% if book.available_copies > 0 %}
+                <span class="book-badge-availability badge-available">
+                  <i class="bi bi-check-circle me-1"></i> {{ book.available_copies }} of {{ book.total_copies }} Available
+                </span>
+              {% else %}
+                <span class="book-badge-availability badge-out-of-stock">
+                  <i class="bi bi-x-circle me-1"></i> Out of Stock
+                </span>
+              {% endif %}
+            </div>
+
+            <div class="book-body">
+              <div class="book-category">{{ book.category }}</div>
+              <h5 class="book-title" title="{{ book.title }}">
+                <a href="{{ url_for('book_details', book_id=book.id) }}" class="text-decoration-none text-dark">
+                  {{ book.title }}
+                </a>
+              </h5>
+              <div class="book-author"><i class="bi bi-person me-1"></i> {{ book.author }}</div>
+              
+              <div class="small text-muted mb-2">
+                <div><i class="bi bi-barcode me-1"></i> ISBN: {{ book.isbn or 'N/A' }}</div>
+                <div><i class="bi bi-geo-alt me-1"></i> Location: {{ book.shelf_location or 'Main Stacks' }}</div>
+              </div>
+
+              <div class="book-footer">
+                <a href="{{ url_for('book_details', book_id=book.id) }}" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-info-circle me-1"></i> Details
+                </a>
+                
+                {% if session.get('role') == 'student' %}
+                  {% if book.available_copies > 0 %}
+                    <button class="btn btn-sm btn-primary-custom" onclick="requestBookBorrow({{ book.id }}, '{{ book.title|replace('\'', '\\\'') }}')">
+                      <i class="bi bi-journal-arrow-down me-1"></i> Borrow
+                    </button>
+                  {% else %}
+                    <button class="btn btn-sm btn-secondary" disabled>
+                      Out of Stock
+                    </button>
+                  {% endif %}
+                {% elif not session.get('user_id') %}
+                  <a href="{{ url_for('login') }}" class="btn btn-sm btn-outline-primary">
+                    Login to Borrow
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-12 py-5 text-center">
+        <div class="py-5 bg-white rounded shadow-sm">
+          <i class="bi bi-search text-muted fs-1 d-block mb-3"></i>
+          <h4 class="fw-bold text-dark">No Books Found</h4>
+          <p class="text-muted">No books matched your search criteria. Try modifying your keywords or filters.</p>
+          <a href="{{ url_for('books') }}" class="btn btn-primary-custom btn-sm">
+            Reset All Filters
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

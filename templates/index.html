@@ -1,0 +1,229 @@
+{% extends "base.html" %}
+
+{% block title %}Digital Library & Research Management System - Gateway to Knowledge{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+  <div class="container position-relative" style="z-index: 2;">
+    <div class="badge px-3 py-2 rounded-pill bg-light text-primary mb-3 fw-semibold">
+      <i class="bi bi-stars text-warning me-1"></i> Centralized Academic Repository & Circulation
+    </div>
+    <h1 class="hero-title">Your Gateway to Knowledge and Research</h1>
+    <p class="hero-subtitle">
+      Discover thousands of physical and digital volumes, access peer-reviewed academic research papers, manage your circulation activity, and elevate your scholarship from one unified portal.
+    </p>
+
+    <!-- Unified Search Bar -->
+    <form action="{{ url_for('books') }}" method="GET" class="hero-search-box">
+      <i class="bi bi-search text-muted fs-5 ms-3 align-self-center"></i>
+      <input type="text" name="q" class="hero-search-input" placeholder="Search by book title, author, ISBN, or topic..." aria-label="Search catalog">
+      <button type="submit" class="btn btn-primary-custom px-4">
+        Search Catalog
+      </button>
+    </form>
+
+    <!-- Quick Call to Action Buttons -->
+    <div class="d-flex justify-content-center gap-3 mt-4 flex-wrap">
+      <a href="{{ url_for('books') }}" class="btn btn-nav-accent px-4 py-2">
+        <i class="bi bi-book me-2"></i> Explore Books
+      </a>
+      <a href="{{ url_for('research') }}" class="btn btn-outline-light px-4 py-2">
+        <i class="bi bi-file-earmark-pdf me-2"></i> Explore Research Papers
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Library Live Statistics Section -->
+<section class="py-5 bg-white border-bottom">
+  <div class="container">
+    <div class="row g-4 text-center">
+      <div class="col-lg-3 col-6">
+        <div class="stat-card h-100">
+          <div class="stat-icon-wrapper stat-icon-navy mx-auto mb-2">
+            <i class="bi bi-journals"></i>
+          </div>
+          <div class="stat-value text-primary">{{ stats.total_books if stats else 10 }}</div>
+          <div class="stat-label">Book Titles</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-6">
+        <div class="stat-card h-100">
+          <div class="stat-icon-wrapper stat-icon-teal mx-auto mb-2">
+            <i class="bi bi-book-half"></i>
+          </div>
+          <div class="stat-value text-teal">{{ stats.available_copies if stats else 27 }}</div>
+          <div class="stat-label">Available Copies</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-6">
+        <div class="stat-card h-100">
+          <div class="stat-icon-wrapper stat-icon-cyan mx-auto mb-2">
+            <i class="bi bi-file-earmark-text"></i>
+          </div>
+          <div class="stat-value text-info">{{ stats.total_papers if stats else 4 }}</div>
+          <div class="stat-label">Research Papers</div>
+        </div>
+      </div>
+      <div class="col-lg-3 col-6">
+        <div class="stat-card h-100">
+          <div class="stat-icon-wrapper stat-icon-purple mx-auto mb-2">
+            <i class="bi bi-person-check"></i>
+          </div>
+          <div class="stat-value text-purple">{{ stats.total_members if stats else 3 }}</div>
+          <div class="stat-label">Registered Members</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Books Section -->
+<section class="py-5">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2">
+      <div>
+        <span class="text-uppercase text-teal fw-bold small">Curated Collection</span>
+        <h2 class="fw-bold mb-0 text-dark">Featured Academic Books</h2>
+      </div>
+      <a href="{{ url_for('books') }}" class="btn btn-outline-secondary btn-sm">
+        View Complete Catalog <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    <div class="row g-4">
+      {% if featured_books %}
+        {% for book in featured_books %}
+          <div class="col-xl-3 col-lg-4 col-md-6">
+            <div class="book-card">
+              <div class="book-cover-container">
+                <img src="{{ url_for('static', filename='images/default_book.svg') }}" alt="{{ book.title }}" class="book-cover-img">
+                {% if book.available_copies > 0 %}
+                  <span class="book-badge-availability badge-available">
+                    <i class="bi bi-check-circle me-1"></i> {{ book.available_copies }} Available
+                  </span>
+                {% else %}
+                  <span class="book-badge-availability badge-out-of-stock">
+                    <i class="bi bi-x-circle me-1"></i> Out of Stock
+                  </span>
+                {% endif %}
+              </div>
+              <div class="book-body">
+                <div class="book-category">{{ book.category }}</div>
+                <h5 class="book-title" title="{{ book.title }}">{{ book.title }}</h5>
+                <p class="book-author"><i class="bi bi-person me-1"></i> {{ book.author }}</p>
+                <div class="book-footer">
+                  <span class="small text-muted"><i class="bi bi-geo-alt me-1"></i> {{ book.shelf_location or 'Main Stacks' }}</span>
+                  <a href="{{ url_for('book_details', book_id=book.id) }}" class="btn btn-sm btn-outline-primary">
+                    Details
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% else %}
+        <div class="col-12 text-center py-5 text-muted">
+          <i class="bi bi-journal-x fs-1 d-block mb-2"></i>
+          <p>No books currently available in catalog.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Latest Research Papers Section -->
+<section class="py-5 bg-white border-top border-bottom">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4 flex-wrap gap-2">
+      <div>
+        <span class="text-uppercase text-cyan fw-bold small">Academic Publications</span>
+        <h2 class="fw-bold mb-0 text-dark">Latest Research Papers</h2>
+      </div>
+      <a href="{{ url_for('research') }}" class="btn btn-outline-secondary btn-sm">
+        All Research Papers <i class="bi bi-arrow-right ms-1"></i>
+      </a>
+    </div>
+
+    <div class="row">
+      {% if latest_papers %}
+        {% for paper in latest_papers %}
+          <div class="col-lg-6 mb-3">
+            <div class="research-card h-100 d-flex flex-column">
+              <div class="d-flex justify-content-between align-items-start gap-2 mb-2">
+                <span class="badge bg-light text-primary border">{{ paper.subject }}</span>
+                <span class="badge bg-secondary-subtle text-secondary">{{ paper.publication_year }}</span>
+              </div>
+              <h5 class="research-title">
+                <a href="{{ url_for('research_details', paper_id=paper.id) }}" class="text-decoration-none text-dark">
+                  {{ paper.title }}
+                </a>
+              </h5>
+              <p class="research-meta">
+                <i class="bi bi-person-fill me-1"></i> {{ paper.author }} &bull; <i class="bi bi-journal me-1"></i> {{ paper.journal_name or 'Academic Proceedings' }}
+              </p>
+              <p class="research-abstract text-truncate-3">
+                {{ paper.abstract[:200] }}...
+              </p>
+              <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top">
+                <div class="keywords-list">
+                  {% if paper.keywords %}
+                    {% for kw in paper.keywords.split(',')[:3] %}
+                      <span class="keyword-pill">{{ kw.strip() }}</span>
+                    {% endfor %}
+                  {% endif %}
+                </div>
+                <a href="{{ url_for('research_details', paper_id=paper.id) }}" class="btn btn-sm btn-primary-custom text-nowrap">
+                  <i class="bi bi-eye me-1"></i> View Paper
+                </a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </div>
+</section>
+
+<!-- Benefits / Features Section -->
+<section class="py-5 bg-light">
+  <div class="container">
+    <div class="text-center max-w-700 mx-auto mb-5">
+      <span class="text-uppercase text-teal fw-bold small">Platform Capabilities</span>
+      <h2 class="fw-bold text-dark">Built for Seamless Research & Learning</h2>
+      <p class="text-muted">Designed from the ground up to replace manual register ledgers with automated borrowing requests, real-time stock monitoring, and paper distribution.</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="stat-icon-wrapper stat-icon-teal mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.8rem;">
+            <i class="bi bi-lightning-charge"></i>
+          </div>
+          <h5 class="fw-bold">Instant Online Requests</h5>
+          <p class="text-muted small">Reserve books directly from your student portal. Track request status, approval notifications, and due date countdowns effortlessly.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="stat-icon-wrapper stat-icon-cyan mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.8rem;">
+            <i class="bi bi-file-earmark-pdf"></i>
+          </div>
+          <h5 class="fw-bold">Open Access Research</h5>
+          <p class="text-muted small">Access full-text research papers, journals, and conference proceedings across computing, artificial intelligence, and applied sciences.</p>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="card h-100 border-0 shadow-sm p-4 text-center">
+          <div class="stat-icon-wrapper stat-icon-navy mx-auto mb-3" style="width: 60px; height: 60px; font-size: 1.8rem;">
+            <i class="bi bi-shield-check"></i>
+          </div>
+          <h5 class="fw-bold">Librarian Command Desk</h5>
+          <p class="text-muted small">Dedicated administrator cockpit with one-click issue/returns, inventory tracking, automatic overdue calculation, and audit logs.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

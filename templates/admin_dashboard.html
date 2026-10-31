@@ -1,0 +1,376 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Digital Library & Research Management System{% endblock %}
+
+{% block content %}
+<div class="dashboard-wrapper">
+  <!-- Left Admin Sidebar -->
+  <aside class="admin-sidebar">
+    <div class="d-flex align-items-center gap-2 mb-4 px-2">
+      <div class="brand-icon-badge" style="width: 32px; height: 32px; font-size: 1rem;">
+        <i class="bi bi-shield-check"></i>
+      </div>
+      <div>
+        <h6 class="text-white mb-0 fw-bold">Admin Console</h6>
+        <span class="small text-muted">Librarian Portal</span>
+      </div>
+    </div>
+
+    <ul class="admin-sidebar-nav">
+      <li class="nav-item">
+        <a class="nav-link active" href="{{ url_for('admin_dashboard') }}">
+          <i class="bi bi-speedometer2"></i> Dashboard Overview
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_books') }}">
+          <i class="bi bi-book"></i> Book Inventory
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_book') }}">
+          <i class="bi bi-plus-circle"></i> Add New Book
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_research') }}">
+          <i class="bi bi-file-earmark-pdf"></i> Research Repository
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('add_research') }}">
+          <i class="bi bi-cloud-arrow-up"></i> Add Research Paper
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_issues') }}">
+          <i class="bi bi-arrow-left-right"></i> Circulation & Issues
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('manage_members') }}">
+          <i class="bi bi-people"></i> Member Management
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('reports') }}">
+          <i class="bi bi-graph-up"></i> Reports & Analytics
+        </a>
+      </li>
+    </ul>
+
+    <div class="mt-5 pt-3 border-top border-secondary text-center px-2">
+      <span class="small text-muted d-block mb-2">Logged in as:</span>
+      <span class="small text-white fw-bold d-block mb-3">{{ session.get('name', 'Administrator') }}</span>
+      <a href="{{ url_for('logout') }}" class="btn btn-outline-danger btn-sm w-100">
+        <i class="bi bi-box-arrow-right me-1"></i> Sign Out
+      </a>
+    </div>
+  </aside>
+
+  <!-- Right Main Content -->
+  <main class="admin-main-content">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Librarian Operations Center</h2>
+        <p class="text-muted small mb-0">Real-time circulation metrics, pending requests, and inventory status.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <a href="{{ url_for('manage_issues') }}" class="btn btn-primary-custom btn-sm">
+          <i class="bi bi-inbox me-1"></i> Review Requests ({{ stats.pending_requests or 0 }})
+        </a>
+        <a href="{{ url_for('add_book') }}" class="btn btn-outline-secondary btn-sm">
+          <i class="bi bi-plus-lg me-1"></i> Add Book
+        </a>
+      </div>
+    </div>
+
+    <!-- 8 Summary Metric Cards -->
+    <div class="row g-3 mb-4">
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="stat-label">Total Books</div>
+              <div class="stat-value text-primary">{{ stats.total_books or 0 }}</div>
+            </div>
+            <div class="stat-icon-wrapper stat-icon-navy">
+              <i class="bi bi-journals"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="stat-label">Available Copies</div>
+              <div class="stat-value text-teal">{{ stats.available_copies or 0 }}</div>
+            </div>
+            <div class="stat-icon-wrapper stat-icon-teal">
+              <i class="bi bi-book-half"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="stat-label">Registered Members</div>
+              <div class="stat-value text-info">{{ stats.total_members or 0 }}</div>
+            </div>
+            <div class="stat-icon-wrapper stat-icon-cyan">
+              <i class="bi bi-people-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="stat-label">Research Papers</div>
+              <div class="stat-value text-purple">{{ stats.total_papers or 0 }}</div>
+            </div>
+            <div class="stat-icon-wrapper stat-icon-purple">
+              <i class="bi bi-file-earmark-text-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="stat-label">Currently Issued</div>
+              <div class="stat-value text-primary">{{ stats.issued_books or 0 }}</div>
+            </div>
+            <div class="stat-icon-wrapper stat-icon-navy">
+              <i class="bi bi-journal-arrow-up"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="stat-label">Pending Requests</div>
+              <div class="stat-value text-warning">{{ stats.pending_requests or 0 }}</div>
+            </div>
+            <div class="stat-icon-wrapper stat-icon-amber">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="stat-label">Overdue Books</div>
+              <div class="stat-value text-danger">{{ stats.overdue_books or 0 }}</div>
+            </div>
+            <div class="stat-icon-wrapper stat-icon-rose">
+              <i class="bi bi-exclamation-octagon-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-3 col-md-6">
+        <div class="stat-card">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div class="stat-label">Returned Books</div>
+              <div class="stat-value text-success">{{ stats.returned_books or 0 }}</div>
+            </div>
+            <div class="stat-icon-wrapper stat-icon-emerald">
+              <i class="bi bi-check-circle-fill"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Circulation Activity & Member Overview -->
+    <div class="row g-4 mb-4">
+      <!-- Recent Circulation Activity Table -->
+      <div class="col-lg-8">
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0 text-dark">
+              <i class="bi bi-arrow-left-right text-primary me-2"></i> Recent Borrowing Activity
+            </h5>
+            <a href="{{ url_for('manage_issues') }}" class="small text-teal text-decoration-none fw-semibold">Circulation Desk</a>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Student</th>
+                    <th>Book</th>
+                    <th>Dates</th>
+                    <th>Status</th>
+                    <th>Quick Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if recent_transactions %}
+                    {% for t in recent_transactions %}
+                      <tr>
+                        <td>
+                          <div class="fw-bold text-dark">{{ t.student_name }}</div>
+                          <div class="small text-muted">{{ t.department }}</div>
+                        </td>
+                        <td>
+                          <div class="fw-semibold">{{ t.book_title }}</div>
+                          <div class="small text-muted"><i class="bi bi-geo-alt"></i> {{ t.shelf_location or 'Stacks' }}</div>
+                        </td>
+                        <td class="small">
+                          {% if t.status == 'Pending' %}
+                            Req: {{ t.request_date[:10] }}
+                          {% elif t.status in ['Issued', 'Overdue'] %}
+                            Due: <strong class="{{ 'text-danger' if t.status == 'Overdue' else 'text-dark' }}">{{ t.due_date }}</strong>
+                          {% elif t.status == 'Returned' %}
+                            Ret: <span class="text-success">{{ t.return_date }}</span>
+                          {% endif %}
+                        </td>
+                        <td>
+                          <span class="badge-status badge-status-{{ t.status.lower() }}">
+                            {{ t.status }}
+                          </span>
+                        </td>
+                        <td>
+                          {% if t.status == 'Pending' %}
+                            <button class="btn btn-sm btn-success py-0 px-2" onclick="approveBorrowRequest({{ t.id }})" title="Approve Request">
+                              <i class="bi bi-check-lg"></i>
+                            </button>
+                            <button class="btn btn-sm btn-outline-danger py-0 px-2" onclick="rejectBorrowRequest({{ t.id }})" title="Reject Request">
+                              <i class="bi bi-x-lg"></i>
+                            </button>
+                          {% elif t.status in ['Issued', 'Overdue'] %}
+                            <button class="btn btn-sm btn-outline-primary py-0 px-2" onclick="returnIssuedBook({{ t.id }})" title="Record Book Return">
+                              <i class="bi bi-arrow-return-left me-1"></i> Return
+                            </button>
+                          {% else %}
+                            <span class="small text-muted">Completed</span>
+                          {% endif %}
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="5" class="text-center py-4 text-muted">
+                        No transactions recorded yet.
+                      </td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- System Audit Log Feed -->
+        <div class="card border-0 shadow-sm mt-4">
+          <div class="card-header bg-white py-3">
+            <h5 class="fw-bold mb-0 text-dark">
+              <i class="bi bi-shield-check text-success me-2"></i> System Audit & Activity Log
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>User</th>
+                    <th>Timestamp</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% if recent_logs %}
+                    {% for log in recent_logs %}
+                      <tr>
+                        <td><span class="badge bg-light text-primary border">{{ log.action }}</span></td>
+                        <td class="small">{{ log.description }}</td>
+                        <td class="small fw-semibold">{{ log.user_name }}</td>
+                        <td class="small text-muted">{{ log.created_at[:16] if log.created_at else '-' }}</td>
+                      </tr>
+                    {% endfor %}
+                  {% else %}
+                    <tr>
+                      <td colspan="4" class="text-center py-3 text-muted">No audit logs recorded.</td>
+                    </tr>
+                  {% endif %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Recent Member Registrations & Quick Actions -->
+      <div class="col-lg-4">
+        <!-- Category Statistics -->
+        <div class="card border-0 shadow-sm mb-4">
+          <div class="card-header bg-white py-3">
+            <h6 class="fw-bold mb-0 text-dark">
+              <i class="bi bi-pie-chart text-teal me-2"></i> Category Distribution
+            </h6>
+          </div>
+          <div class="card-body p-3">
+            {% if category_counts %}
+              {% for cc in category_counts %}
+                <div class="d-flex justify-content-between align-items-center mb-2 small">
+                  <span class="text-truncate me-2" style="max-width: 180px;">{{ cc.category }}</span>
+                  <span class="badge bg-light text-dark border">{{ cc.count }} titles</span>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="small text-muted text-center py-2">No category data available.</div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Recent Member Registrations -->
+        <div class="card border-0 shadow-sm">
+          <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
+            <h6 class="fw-bold mb-0 text-dark">
+              <i class="bi bi-person-check text-primary me-2"></i> Newest Students
+            </h6>
+            <a href="{{ url_for('manage_members') }}" class="small text-teal text-decoration-none">Manage All</a>
+          </div>
+          <div class="list-group list-group-flush">
+            {% if recent_members %}
+              {% for rm in recent_members %}
+                <div class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
+                  <div>
+                    <div class="fw-semibold text-dark small">{{ rm.name }}</div>
+                    <div class="text-muted" style="font-size: 0.78rem;">{{ rm.department or 'Student' }} &bull; {{ rm.student_id or 'ID N/A' }}</div>
+                  </div>
+                  <span class="badge-status badge-status-{{ rm.status }}">
+                    {{ rm.status }}
+                  </span>
+                </div>
+              {% endfor %}
+            {% else %}
+              <div class="p-3 text-muted small text-center">No students registered yet.</div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+{% endblock %}

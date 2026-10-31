@@ -1,0 +1,141 @@
+{% extends "base.html" %}
+
+{% block title %}About - Digital Library & Research Management System{% endblock %}
+
+{% block content %}
+<div class="py-5 bg-white border-bottom">
+  <div class="container">
+    <div class="row align-items-center">
+      <div class="col-lg-8">
+        <span class="badge bg-light text-primary border mb-2 px-3 py-2 fw-semibold">Institutional Heritage & Mission</span>
+        <h1 class="fw-bold text-dark mb-3">About the Digital Library System</h1>
+        <p class="lead text-muted mb-0">
+          Empowering academic excellence, fostering interdisciplinary research, and modernizing collection management through responsive digital workflows.
+        </p>
+      </div>
+      <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+        <a href="{{ url_for('books') }}" class="btn btn-primary-custom me-2">Browse Catalog</a>
+        <a href="{{ url_for('register') }}" class="btn btn-outline-secondary">Join Library</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <div class="row g-5">
+    <!-- Main Description Column -->
+    <div class="col-lg-8">
+      <h3 class="fw-bold mb-3 text-dark">Our Purpose & Vision</h3>
+      <p class="text-muted" style="line-height: 1.8;">
+        The <strong>Digital Library & Research Management System</strong> is an integrated full-stack platform designed specifically to bridge physical book holdings with open-access digital scholarship. Developed for academic institutions and universities, this platform eliminates manual logbooks, enables instant borrowing requests, automates overdue calculations, and provides students with instantaneous access to high-impact research papers.
+      </p>
+
+      <div class="row g-4 my-4">
+        <div class="col-md-6">
+          <div class="card h-100 p-4 border-0 shadow-sm bg-light">
+            <div class="stat-icon-wrapper stat-icon-teal mb-3">
+              <i class="bi bi-book"></i>
+            </div>
+            <h5 class="fw-bold">Physical Book Inventory</h5>
+            <p class="small text-muted mb-0">
+              Live tracking of shelf locations, total copies, available copies, and instant reservation workflows for library members.
+            </p>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="card h-100 p-4 border-0 shadow-sm bg-light">
+            <div class="stat-icon-wrapper stat-icon-cyan mb-3">
+              <i class="bi bi-mortarboard"></i>
+            </div>
+            <h5 class="fw-bold">Academic Research Repository</h5>
+            <p class="small text-muted mb-0">
+              Centralized indexing of student theses, faculty publications, and peer-reviewed journal papers available for immediate reading and download.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Circulation Policy Anchor -->
+      <div id="circulation-policy" class="pt-4 mt-4 border-top">
+        <h3 class="fw-bold mb-3 text-dark">Circulation Policies & Rules</h3>
+        <div class="table-responsive">
+          <table class="table table-bordered table-custom">
+            <thead class="table-light">
+              <tr>
+                <th>Item Category</th>
+                <th>Standard Loan Period</th>
+                <th>Maximum Items</th>
+                <th>Renewal Policy</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="fw-semibold">Undergraduate Course Textbooks</td>
+                <td>14 Days</td>
+                <td>3 Books</td>
+                <td>Up to 1 renewal if no pending hold</td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Postgraduate / Faculty Books</td>
+                <td>28 Days</td>
+                <td>5 Books</td>
+                <td>Up to 2 renewals</td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Digital Research Papers & PDFs</td>
+                <td>Unlimited Online Access</td>
+                <td>Unlimited</td>
+                <td>Not applicable (Open Access)</td>
+              </tr>
+              <tr>
+                <td class="fw-semibold">Reference & Rare Collections</td>
+                <td>In-Library Reading Only</td>
+                <td>1 at a time</td>
+                <td>Non-circulating</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar Information -->
+    <div class="col-lg-4">
+      <!-- Operating Hours Card -->
+      <div id="hours" class="card border-0 shadow-sm p-4 mb-4">
+        <h5 class="fw-bold mb-3 d-flex align-items-center gap-2">
+          <i class="bi bi-clock-history text-teal"></i> Operating Hours
+        </h5>
+        <ul class="list-group list-group-flush small">
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Monday – Friday</span>
+            <span class="fw-bold">8:00 AM – 9:00 PM</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Saturday</span>
+            <span class="fw-bold">9:00 AM – 5:00 PM</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0 text-muted">
+            <span>Sunday & University Holidays</span>
+            <span class="text-danger fw-bold">Closed</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between px-0">
+            <span>Digital Repository & Online Requests</span>
+            <span class="text-success fw-bold">24/7 Always Open</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Contact Helpdesk Card -->
+      <div class="card border-0 shadow-sm p-4 bg-primary text-white">
+        <h5 class="fw-bold mb-2">Need Research Assistance?</h5>
+        <p class="small text-white-50 mb-3">Our reference librarians are available to assist with literature reviews, paper queries, and special acquisitions.</p>
+        <div class="small">
+          <p class="mb-2"><i class="bi bi-envelope me-2"></i> librarian@collegelibrary.edu</p>
+          <p class="mb-0"><i class="bi bi-telephone me-2"></i> +1 (555) 019-2834</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

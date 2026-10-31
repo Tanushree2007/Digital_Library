@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Research Papers Library - Digital Library & Research Management System{% endblock %}
+
+{% block content %}
+<div class="py-4 bg-white border-bottom">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <div>
+        <h2 class="fw-bold mb-1 text-dark">Academic Research Repository</h2>
+        <p class="text-muted small mb-0">Explore peer-reviewed publications, conference proceedings, and faculty monographs.</p>
+      </div>
+      <div>
+        {% if session.get('role') == 'admin' %}
+          <a href="{{ url_for('add_research') }}" class="btn btn-primary-custom btn-sm">
+            <i class="bi bi-cloud-arrow-up me-1"></i> Add Research Paper
+          </a>
+        {% else %}
+          <span class="badge bg-secondary-subtle text-secondary px-3 py-2 fs-6">
+            <i class="bi bi-file-earmark-pdf me-1"></i> {{ papers|length }} Papers Indexed
+          </span>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container py-4">
+  <!-- Search & Filter Controls -->
+  <div class="card border-0 shadow-sm p-3 mb-4">
+    <form action="{{ url_for('research') }}" method="GET" class="row g-3 align-items-center">
+      <div class="col-lg-5 col-md-6">
+        <label class="form-label small text-muted mb-1">Keywords / Title / Author</label>
+        <div class="input-group">
+          <span class="input-group-text bg-light text-muted"><i class="bi bi-search"></i></span>
+          <input type="text" name="q" value="{{ search_query or '' }}" class="form-control" placeholder="Search title, author, abstract, keywords...">
+        </div>
+      </div>
+
+      <div class="col-lg-4 col-md-6">
+        <label class="form-label small text-muted mb-1">Subject Area</label>
+        <select name="subject" class="form-select">
+          <option value="">All Academic Subjects</option>
+          {% for cat in subjects %}
+            <option value="{{ cat }}" {% if selected_subject == cat %}selected{% endif %}>
+              {{ cat }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="col-lg-2 col-md-6">
+        <label class="form-label small text-muted mb-1">Publication Year</label>
+        <input type="number" name="year" value="{{ selected_year or '' }}" class="form-control" placeholder="e.g. 2024" min="1990" max="2030">
+      </div>
+
+      <div class="col-lg-1 col-md-6 d-flex align-items-end gap-1">
+        <button type="submit" class="btn btn-primary-custom w-100" title="Apply Filter">
+          <i class="bi bi-funnel"></i>
+        </button>
+        {% if search_query or selected_subject or selected_year %}
+          <a href="{{ url_for('research') }}" class="btn btn-outline-secondary" title="Reset Filters">
+            <i class="bi bi-arrow-counterclockwise"></i>
+          </a>
+        {% endif %}
+      </div>
+    </form>
+  </div>
+
+  <!-- Research Papers List -->
+  <div class="row">
+    {% if papers %}
+      {% for paper in papers %}
+        <div class="col-12 mb-3">
+          <div class="research-card">
+            <div class="d-flex justify-content-between align-items-start gap-2 mb-2 flex-wrap">
+              <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-primary border">{{ paper.subject }}</span>
+                <span class="badge bg-secondary-subtle text-secondary">{{ paper.publication_year }}</span>
+                {% if paper.journal_name %}
+                  <span class="small text-muted"><i class="bi bi-journal-text me-1"></i> {{ paper.journal_name }}</span>
+                {% endif %}
+              </div>
+              <span class="small text-muted"><i class="bi bi-calendar-check me-1"></i> Indexed: {{ paper.created_at[:10] if paper.created_at else 'Recent' }}</span>
+            </div>
+
+            <h4 class="research-title mb-2">
+              <a href="{{ url_for('research_details', paper_id=paper.id) }}" class="text-decoration-none text-dark">
+                {{ paper.title }}
+              </a>
+            </h4>
+
+            <div class="research-meta mb-3">
+              <span class="text-dark fw-semibold"><i class="bi bi-people me-1"></i> {{ paper.author }}</span>
+            </div>
+
+            <p class="research-abstract">
+              {{ paper.abstract }}
+            </p>
+
+            <div class="d-flex justify-content-between align-items-center pt-3 border-top flex-wrap gap-2">
+              <div class="keywords-list">
+                {% if paper.keywords %}
+                  {% for kw in paper.keywords.split(',') %}
+                    <span class="keyword-pill"><i class="bi bi-tag me-1"></i>{{ kw.strip() }}</span>
+                  {% endfor %}
+                {% endif %}
+              </div>
+
+              <div class="d-flex gap-2">
+                <a href="{{ url_for('research_details', paper_id=paper.id) }}" class="btn btn-sm btn-outline-secondary">
+                  <i class="bi bi-info-circle me-1"></i> Abstract & Details
+                </a>
+                {% if paper.pdf_path %}
+                  <a href="{{ url_for('download_paper', paper_id=paper.id) }}" target="_blank" class="btn btn-sm btn-primary-custom">
+                    <i class="bi bi-file-earmark-pdf me-1"></i> Read / Download PDF
+                  </a>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <div class="col-12 py-5 text-center">
+        <div class="py-5 bg-white rounded shadow-sm">
+          <i class="bi bi-file-earmark-x text-muted fs-1 d-block mb-3"></i>
+          <h4 class="fw-bold text-dark">No Research Papers Found</h4>
+          <p class="text-muted">No publications matched your keyword or filter options. Try adjusting your query.</p>
+          <a href="{{ url_for('research') }}" class="btn btn-primary-custom btn-sm">
+            Clear Filters
+          </a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
