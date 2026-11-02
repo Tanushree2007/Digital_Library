@@ -85,6 +85,28 @@
       </div>
     </div>
 
+    <!-- Interactive Welcome Dashboard Banner -->
+    <div class="dashboard-welcome-banner mb-4">
+      <div class="welcome-dock-text">
+        <div class="d-flex align-items-center gap-2 mb-1">
+          <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-2 py-1 small">
+            <i class="bi bi-shield-check me-1"></i> Administrative Console
+          </span>
+          <span class="small text-muted">Central Campus Library Management</span>
+        </div>
+        <h4>Hello, Welcome to Your Digital Library!</h4>
+        <p>Your gateway to knowledge, books, and research. Real-time circulation, member operations, and inventory oversight.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button type="button" class="btn btn-sm btn-outline-light" onclick="if(window.LibraAssistant) window.LibraAssistant.openChat()">
+          <i class="bi bi-chat-quote-fill me-1 text-cyan"></i> Ask Libra
+        </button>
+        <a href="{{ url_for('manage_issues') }}" class="btn btn-sm btn-primary-custom">
+          <i class="bi bi-arrow-left-right me-1"></i> Circulation Desk
+        </a>
+      </div>
+    </div>
+
     <!-- 8 Summary Metric Cards -->
     <div class="row g-3 mb-4">
       <div class="col-xl-3 col-md-6">

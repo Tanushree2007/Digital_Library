@@ -14,6 +14,7 @@ from routes.research import research_bp
 from routes.borrowing import borrowing_bp
 from routes.members import members_bp
 from routes.dashboard import dashboard_bp
+from routes.assistant import assistant_bp
 
 
 def create_app():
@@ -45,6 +46,7 @@ def create_app():
     app.register_blueprint(borrowing_bp)
     app.register_blueprint(members_bp)
     app.register_blueprint(dashboard_bp)
+    app.register_blueprint(assistant_bp)
 
     # Shorthand mapping so url_for('index') works alongside url_for('dashboard.index')
     shorthand_endpoints = {

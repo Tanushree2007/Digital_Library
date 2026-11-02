@@ -162,6 +162,7 @@ def api_login():
     session['role'] = user['role']
     session['student_id'] = user['student_id']
     session['department'] = user['department']
+    session['show_welcome'] = True
 
     log_activity(user['id'], "Login", f"User logged in: {user['name']} ({user['role']})")
 
@@ -252,6 +253,7 @@ def login():
         session['role'] = user['role']
         session['student_id'] = user['student_id']
         session['department'] = user['department']
+        session['show_welcome'] = True
 
         log_activity(user['id'], "Login", f"User logged in: {user['name']} ({user['role']})")
         flash(f"Welcome back, {user['name']}!", "success")
@@ -389,3 +391,8 @@ def profile():
 
     conn.close()
     return render_template('profile.html', user=user)
+
+@auth_bp.route('/api/welcome/dismiss', methods=['POST'])
+def api_dismiss_welcome():
+    session.pop('show_welcome', None)
+    return jsonify({'success': True}), 200
